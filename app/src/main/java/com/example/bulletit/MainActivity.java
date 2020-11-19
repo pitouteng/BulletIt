@@ -5,9 +5,15 @@ package com.example.bulletit;
         import android.os.Bundle;
         import android.view.View;
 
+        import java.text.DateFormat;
+        import java.text.SimpleDateFormat;
+        import java.util.Calendar;
+        import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     private android.widget.Button dateBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +21,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dateBtn = findViewById(R.id.DateButton);
+        Date currentTime = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("E, MMM dd");
+        String dateString = dateFormat.format(currentTime);
+
+
+        dateBtn.setText(dateString);
 
         dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
