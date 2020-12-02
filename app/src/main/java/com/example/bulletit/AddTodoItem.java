@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class AddTodoitem  extends AppCompatDialogFragment {
+public class AddTodoItem extends AppCompatDialogFragment {
     private EditText editTextAddTodoItem;
     private AddTodoItemListener listener;
 
@@ -37,7 +37,7 @@ public class AddTodoitem  extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String todoItem = editTextAddTodoItem.getText().toString();
-                        listener.applyTodoItemn(todoItem);
+                        listener.applyTodoItem(todoItem);
                     }
                 });
 
@@ -60,6 +60,6 @@ public class AddTodoitem  extends AppCompatDialogFragment {
     }
 
     public interface AddTodoItemListener{
-        void applyTodoItemn(String todoItem);
+        void applyTodoItem(String todoItem);
     }
 }
