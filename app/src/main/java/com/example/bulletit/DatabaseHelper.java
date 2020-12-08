@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "create table " + TABLE_NAME + "(id INTEGER PRIMARY KEY, txt TEXT)";
+        String createTable = "create table " + TABLE_NAME + "(Date TEXT, Event TEXT)";
         db.execSQL(createTable);
     }
 
@@ -30,30 +30,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addText(String text){
+    public boolean addText(String dateString, String text){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("txt", text);
+        contentValues.put("Date", dateString);
+        contentValues.put("Event", text);
         sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
         return true;
     }
 
-    public ArrayList getAllText(){
+    public ArrayList getAllText(String dateString){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         ArrayList<String> arrayList = new ArrayList<String>();
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from "+TABLE_NAME, null);
+        String query = "Select Event from "+TABLE_NAME+ " where Date = '" + dateString + "'";
+        Cursor cursor = sqLiteDatabase.rawQuery(query, null);
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
-            arrayList.add(cursor.getString(cursor.getColumnIndex("txt")));
+            arrayList.add(cursor.getString(cursor.getColumnIndex("Event")));
             cursor.moveToNext();
         }
         return arrayList;
     }
 
-    public void delete(/*dateString*/) {
+    public void delete(String dateString) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        sqLiteDatabase.execSQL("delete from "+ TABLE_NAME);
-        //sqLiteDatabase.execSQL("delete "+dateString+" from "+ TABLE_NAME);
+        sqLiteDatabase.execSQL("delete from "+ TABLE_NAME+ " where Date = '" + dateString + "'");
     }
 }

@@ -33,22 +33,26 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
 
         databaseHelper = new DatabaseHelper(MainActivity.this);
         //arrayList.clear();
-        arrayList = databaseHelper.getAllText();
+        //arrayList = databaseHelper.getAllText();
 
         clearBtn = findViewById(R.id.clearButton);
 
         dateBtn = findViewById(R.id.DateButton);
+        String dateString;
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String dateString = extras.getString("date");
+            dateString = extras.getString("date");
             dateBtn.setText(dateString);
             //The key argument here must match that used in the other activity
         } else {
             Date currentTime = Calendar.getInstance().getTime();
             DateFormat dateFormat = new SimpleDateFormat("E MMM dd");
-            String dateString = dateFormat.format(currentTime);
+            dateString = dateFormat.format(currentTime);
             dateBtn.setText(dateString);
         }
+
+        String dateStringM = dateString.replaceAll("\\s", "");
+        arrayList = databaseHelper.getAllText(dateStringM);
 
         final TextView todoView = (TextView) findViewById(R.id.todo);
         LinearLayout todoBox = findViewById(R.id.todoBox);
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
             newTodoItem.setPadding(25, 0, 0 , 0);
             todoBox.addView(newTodoItem);
         }
+
         todoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +96,17 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
         clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                databaseHelper.delete();
+                String dateString2;
+                Bundle extras = getIntent().getExtras();
+                if (extras != null) {
+                    dateString2 = extras.getString("date");
+                } else {
+                    Date currentTime = Calendar.getInstance().getTime();
+                    DateFormat dateFormat = new SimpleDateFormat("E MMM dd");
+                    dateString2 = dateFormat.format(currentTime);
+                }
+                String dateStringM = dateString2.replaceAll("\\s", "");
+                databaseHelper.delete(dateStringM);
                 LinearLayout todoBox = findViewById(R.id.todoBox);
                 todoBox.removeAllViews();
             }
@@ -105,9 +120,19 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
 
     @Override
     public void applyTodoItem(String todoItem) {
-        databaseHelper.addText(todoItem);
+        String dateString1;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            dateString1 = extras.getString("date");
+        } else {
+            Date currentTime = Calendar.getInstance().getTime();
+            DateFormat dateFormat = new SimpleDateFormat("E MMM dd");
+            dateString1 = dateFormat.format(currentTime);
+        }
+        String dateStringM = dateString1.replaceAll("\\s", "");
+        databaseHelper.addText(dateStringM, todoItem);
         arrayList.clear();
-        arrayList.addAll(databaseHelper.getAllText());
+        arrayList.addAll(databaseHelper.getAllText(dateStringM));
         LinearLayout todoBox = findViewById(R.id.todoBox);
         todoBox.removeAllViews();
         for(int i = 0; i < arrayList.size(); i++)
