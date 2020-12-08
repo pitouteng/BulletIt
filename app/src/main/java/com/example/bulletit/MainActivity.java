@@ -13,26 +13,57 @@ package com.example.bulletit;
 
         import java.text.DateFormat;
         import java.text.SimpleDateFormat;
+        import java.util.ArrayList;
         import java.util.Calendar;
         import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTodoItemListener,AddEventItem.AddEventItemListener  {
 
     private android.widget.Button dateBtn;
+    private android.widget.Button clearBtn;
     private Object MainActivity;
 
+    DatabaseHelper databaseHelper;
+    ArrayList arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        databaseHelper = new DatabaseHelper(MainActivity.this);
+        //arrayList.clear();
+        arrayList = databaseHelper.getAllText();
+
+        clearBtn = findViewById(R.id.clearButton);
+
         dateBtn = findViewById(R.id.DateButton);
-        Date currentTime = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("E MMM dd");
-        String dateString = dateFormat.format(currentTime);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String dateString = extras.getString("date");
+            dateBtn.setText(dateString);
+            //The key argument here must match that used in the other activity
+        } else {
+            Date currentTime = Calendar.getInstance().getTime();
+            DateFormat dateFormat = new SimpleDateFormat("E MMM dd");
+            String dateString = dateFormat.format(currentTime);
+            dateBtn.setText(dateString);
+        }
 
         final TextView todoView = (TextView) findViewById(R.id.todo);
+        LinearLayout todoBox = findViewById(R.id.todoBox);
+        todoBox.removeAllViews();
+        for(int i = 0; i < arrayList.size(); i++)
+        {
+            TextView newTodoItem = new TextView(this);
+            newTodoItem.setText(arrayList.get(i).toString());
+            newTodoItem.setGravity(Gravity.CENTER_VERTICAL);
+
+            ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) newTodoItem.getLayoutParams();
+            newTodoItem.setHeight(getResources().getDimensionPixelSize(R.dimen.todo_text_view_height));
+            newTodoItem.setPadding(25, 0, 0 , 0);
+            todoBox.addView(newTodoItem);
+        }
         todoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,11 +80,20 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
         });
 
 
-        dateBtn.setText(dateString);
+        //dateBtn.setText(dateString);
         dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 moveToMonthlyViewActivity();
+            }
+        });
+
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                databaseHelper.delete();
+                LinearLayout todoBox = findViewById(R.id.todoBox);
+                todoBox.removeAllViews();
             }
         });
     }
@@ -65,16 +105,22 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
 
     @Override
     public void applyTodoItem(String todoItem) {
-        TextView newTodoItem = new TextView(this);
-        newTodoItem.setText(todoItem);
-        newTodoItem.setGravity(Gravity.CENTER_VERTICAL);
-
-        ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) newTodoItem.getLayoutParams();
-        newTodoItem.setHeight(getResources().getDimensionPixelSize(R.dimen.todo_text_view_height));
-        newTodoItem.setPadding(25, 0, 0 , 0);
-
+        databaseHelper.addText(todoItem);
+        arrayList.clear();
+        arrayList.addAll(databaseHelper.getAllText());
         LinearLayout todoBox = findViewById(R.id.todoBox);
-        todoBox.addView(newTodoItem);
+        todoBox.removeAllViews();
+        for(int i = 0; i < arrayList.size(); i++)
+        {
+            TextView newTodoItem = new TextView(this);
+            newTodoItem.setText(arrayList.get(i).toString());
+            newTodoItem.setGravity(Gravity.CENTER_VERTICAL);
+
+            ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) newTodoItem.getLayoutParams();
+            newTodoItem.setHeight(getResources().getDimensionPixelSize(R.dimen.todo_text_view_height));
+            newTodoItem.setPadding(25, 0, 0 , 0);
+            todoBox.addView(newTodoItem);
+        }
     }
 
     public void addEventItemDialog(){
