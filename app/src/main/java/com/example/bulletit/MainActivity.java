@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements AddTodoItem.AddTo
                 databaseHelper.delete(dateStringM);
                 LinearLayout todoBox = findViewById(R.id.todoBox);
                 todoBox.removeAllViews();
+                RelativeLayout eventBox = findViewById(R.id.eventBox);
+                eventBox.removeAllViews();
+
             }
         });
     }
